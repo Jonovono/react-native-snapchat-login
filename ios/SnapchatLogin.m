@@ -47,7 +47,7 @@ RCT_REMAP_METHOD(fetchUserData, fetchUserDataResolver
                  : (RCTPromiseResolveBlock)resolve rejecter
                  : (RCTPromiseRejectBlock)reject) {
   if ([SCSDKLoginClient isUserLoggedIn]) {
-    NSString *graphQLQuery = @"{me{displayName, bitmoji{avatar}}}";
+    NSString *graphQLQuery = @"{me{displayName, bitmoji{avatar, id}}}";
     NSDictionary *variables = @{@"page" : @"bitmoji"};
     
     [SCSDKLoginClient fetchUserDataWithQuery:graphQLQuery
@@ -61,9 +61,11 @@ RCT_REMAP_METHOD(fetchUserData, fetchUserDataResolver
       if (bitmojiAvatarUrl == (id)[NSNull null] ||
           bitmojiAvatarUrl.length == 0)
         bitmojiAvatarUrl = @"null";
+
+        NSString *avatarId = bitmoji[@"id"];
       
       resolve(
-              @{@"displayName" : displayName, @"bitmoji" : bitmojiAvatarUrl});
+              @{@"displayName" : displayName, @"bitmoji" : bitmojiAvatarUrl, @"avatarId": avatarId});
     }
                                      failure:^(NSError *error, BOOL isUserLoggedOut) {
       reject(@"error", @"error", error);
